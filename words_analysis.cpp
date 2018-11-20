@@ -260,14 +260,21 @@ private:
 					error("unclosed string", line_number, char_number);
 				if (type == TOKEN_TYPE::ANNOTATION)
 					error("unclosed annotation", line_number, char_number);
-				close_word();
+				if (!word.empty())
+					close_word();
 				break;
 			}
 
-			if (isSign && !isValidSign(ch))
-				close_word();
+			if (isSign) {
+	            if (getType(word) != TOKEN_TYPE::NONE &&
+	                    getType(word + ch) == TOKEN_TYPE::NONE)
+	                close_word();
+	            else if (!isValidSign(ch))
+	                close_word();
+	        }
 
-			if (!word.empty() && !isSign && isValidSign(ch))
+			if (!word.empty() && type != TOKEN_TYPE::ANNOTATION && type != TOKEN_TYPE::STRING
+				&& !isSign && isValidSign(ch))
 				close_word();
 
 			if (word.empty()) {
