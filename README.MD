@@ -6,7 +6,7 @@
 # windows
 g++ words_analysis.cpp -std=c++11 -o words_analysis.exe
 
-#linux
+# linux
 g++ words_analysis.cpp -std=c++11 -o words_analysis
 ```
 
@@ -16,7 +16,7 @@ g++ words_analysis.cpp -std=c++11 -o words_analysis
 # windows
 words_analysis.exe --test
 
-#linux
+# linux
 ./words_analysis --test
 ```
 
