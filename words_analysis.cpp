@@ -199,7 +199,7 @@ bool compile_error = false;
 
 void error(string err, int line, int offset) {
 	compile_error = true;
-	cerr << "ERROR IN LINE " << line << ":" << offset << " " << err << endl;
+	cout << "ERROR IN LINE " << line << ":" << offset << " " << err << endl;
 }
 
 struct Token {
@@ -331,7 +331,7 @@ private:
 			if (type == TOKEN_TYPE::NUMBER && !isDigit(ch))
 				error(string("here must be a digit: ") + ch, line_number, char_number);
 			if (type == TOKEN_TYPE::ID && !isLetter(ch) && !isDigit(ch))
-				error(string("here must be a letter: ") + ch, line_number, char_number);
+				error(string("here must be a letter or digit: ") + ch, line_number, char_number);
 
 			word += ch;
 			if (ch == '\n')
@@ -342,11 +342,50 @@ private:
 	}
 };
 
+bool scan(string filename) {
+	compile_error = false; // 重置错误状态
+	ifstream in(filename);
+	if (!in) {
+		cout << "can not open file!" << endl;
+		return false;
+	}
+	WordsAnalysis worker(in);
+	if (!compile_error) {
+		vector<Token> list = worker.getTokens();
+		for (int i = 0; i < list.size(); ++i)
+			cout << "(" << toString(list[i].type) << ", " << list[i].token << ")" << endl;
+		return true;
+	}
+    return false;
+}
+
 int main(int argc, char *argv[])
 {
 	string filename;
 	if (argc > 1)
 		filename = argv[1];
+
+	if (filename == "--test") {
+		// 测试环境
+		int success_num = 0;
+		int error_num = 0;
+		vector<string> tests { "test/test1.txt", "test/test2.txt" };
+		for (string test : tests) {
+			cout << "---- START TEST " + test + " ----" << endl;
+			if (scan(test)) {
+				success_num ++;
+				cout << endl << "test passed." << endl;
+			}
+			else {
+				error_num ++;
+				cout << endl << "test failed." << endl;
+			}
+			cout << "------ END TEST " + test + " ----" << endl << endl;
+		}
+		cout << success_num << " test(s) passed. " << error_num << " test(s) failed." << endl;
+		return 0;
+	}
+
 	if (filename.empty()) {
 		cout << "please input a file name to open: ";
 		getline(cin, filename);
@@ -364,5 +403,6 @@ int main(int argc, char *argv[])
 			cout << "(" << toString(list[i].type) << ", " << list[i].token << ")" << endl;
 	} else
 		cout << "\ncomplie fail.";
+	system("pause");
     return 0;
 }

@@ -6,4 +6,6 @@ D:= 'scanner';
 C:=A and not B;
 while A<=D do 
 	A:=A*2
-end
+end;
+if(A>-B)then C:=true;end;
+if(A<=-B)then C:=false;end;
